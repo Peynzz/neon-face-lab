@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050807">
+<title>NEON / Face Lab</title>
+<style>
+:root{--bg:#050807;--panel:#0b1210;--panel2:#0e1915;--line:#183c2b;--green:#5dff9b;--green2:#20d96b;--muted:#8da99a;--text:#e8fff0;--danger:#ffb46b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% -15%,#123321 0,transparent 45%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input{font:inherit}button{cursor:pointer}a{color:var(--green)}
+.shell{max-width:1280px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid var(--line);padding:6px 0 22px}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border:1px solid var(--green);display:grid;place-items:center;color:var(--green);font-weight:900;box-shadow:0 0 24px #20d96b22;border-radius:10px}
+.kicker{font-size:11px;letter-spacing:.22em;color:var(--green);text-transform:uppercase}.brand h1{font-size:18px;letter-spacing:.12em;margin:0}.status{color:var(--green);font-size:12px;display:flex;align-items:center;gap:8px}.dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 12px var(--green)}
+.hero{padding:28px 0 22px;display:flex;justify-content:space-between;align-items:end;gap:18px}.hero h2{font-size:clamp(26px,4vw,42px);line-height:1.08;margin:8px 0 12px;letter-spacing:-.04em}.hero p{max-width:650px;color:var(--muted);margin:0}.pill{border:1px solid var(--line);color:var(--green);border-radius:999px;padding:8px 12px;font-size:11px;letter-spacing:.1em;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px}.panel{background:linear-gradient(145deg,#0b1210,#080d0b);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);gap:12px}.panel-head h3{font-size:12px;letter-spacing:.16em;margin:0;text-transform:uppercase}.tiny{font-size:11px;color:var(--muted)}.stage{min-height:360px;position:relative;display:grid;place-items:center;background:radial-gradient(ellipse at center,#0d2017,#060a08 72%);overflow:hidden}.stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#1a593622 1px,transparent 1px),linear-gradient(90deg,#1a593622 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(transparent,black 20%,black 80%,transparent);pointer-events:none}
+#preview{display:none;max-width:100%;max-height:560px;object-fit:contain;position:relative;z-index:1}#overlay{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}.placeholder{text-align:center;z-index:1;padding:30px;color:var(--muted)}.face-icon{width:88px;height:110px;margin:0 auto 16px;border:1px solid #2a7750;border-radius:48% 48% 44% 44%;position:relative;box-shadow:0 0 35px #20d96b12}.face-icon:before{content:"";position:absolute;top:38px;left:18px;width:8px;height:4px;background:var(--green);box-shadow:42px 0 var(--green)}.face-icon:after{content:"";position:absolute;top:64px;left:30px;width:26px;height:12px;border-bottom:1px solid var(--green);border-radius:50%}
+.scanline{display:none;position:absolute;z-index:3;left:0;right:0;height:2px;background:var(--green);box-shadow:0 0 18px 4px #20d96b77;animation:scan 2.2s ease-in-out infinite}@keyframes scan{0%{top:8%;opacity:0}12%{opacity:1}88%{opacity:1}100%{top:92%;opacity:0}}
+.controls{padding:16px 18px;display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--line);border-radius:9px;background:#0c1711;color:var(--text);padding:10px 14px}.btn.primary{background:var(--green);border-color:var(--green);color:#031008;font-weight:800}.btn:disabled{opacity:.45;cursor:not-allowed}.btn:hover:not(:disabled){filter:brightness(1.12)}input[type=file]{display:none}
+.note{padding:0 18px 17px;color:var(--muted);font-size:12px}.results{padding:18px;display:grid;gap:16px}.empty{padding:26px 14px;border:1px dashed #245239;border-radius:12px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--text);margin-bottom:4px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{padding:13px;border:1px solid var(--line);border-radius:10px;background:#09100c}.metric .label{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}.metric .value{font-size:22px;color:var(--green);font-weight:700;margin-top:4px}.metric .sub{font-size:11px;color:var(--muted)}
+.section-title{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:12px;letter-spacing:.13em;text-transform:uppercase;margin:0 0 10px}.barrow{margin:12px 0}.barlabel{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}.bar{height:5px;background:#14231a;border-radius:10px;overflow:hidden}.bar span{height:100%;display:block;background:linear-gradient(90deg,#20d96b,#9cffc2);box-shadow:0 0 12px #20d96b55}
+.gallery{padding:18px;border-top:1px solid var(--line)}.gallery-desc{font-size:12px;color:var(--muted);margin:-3px 0 14px}.gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.gcard{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#080d0b}.gcard img{width:100%;height:112px;object-fit:cover;display:block;background:#101a14}.gcard .gmeta{padding:9px}.gcard input{width:100%;background:#060a08;color:var(--text);border:1px solid #244633;border-radius:6px;padding:6px;font-size:11px;margin-top:6px}.score{font-size:12px;color:var(--green);margin-top:3px}.footer{margin:20px 0 6px;color:#789184;font-size:11px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.warning{color:var(--danger)}.small-action{font-size:11px;padding:6px 9px}
+@media(max-width:850px){.shell{padding:16px}.layout{grid-template-columns:1fr}.hero{align-items:start;flex-direction:column}.stage{min-height:290px}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gcard img{height:140px}}
+@media(max-width:420px){.status{display:none}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric .value{font-size:19px}.panel-head{padding:13px}.controls{padding:13px}.btn{flex:1}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top">
+  <div class="brand"><div class="logo">N/</div><div><div class="kicker">Visual intelligence</div><h1>NEON / FACE LAB</h1></div></div>
+  <div class="status"><span class="dot"></span> LOCAL-FIRST MODE</div>
+</header>
+<section class="hero">
+ <div><div class="kicker">Computer vision • Lab 01</div><h2>See the details.<br><span style="color:var(--green)">Not the identity.</span></h2><p>Analisis visual wajah dan pencocokan gambar berbasis tampilan dalam galeri yang kamu pilih. Foto diproses di browser; aplikasi ini tidak mencari identitas atau akun media sosial seseorang.</p></div>
+ <div class="pill">BUILD 01.4 / BETA</div>
+</section>
+<div class="layout">
+ <section class="panel">
+  <div class="panel-head"><h3>01 / Input specimen</h3><span class="tiny" id="fileInfo">NO IMAGE LOADED</span></div>
+  <div class="stage" id="stage">
+   <div class="placeholder" id="placeholder"><div class="face-icon"></div><strong>Menunggu gambar</strong><div class="tiny">Pilih foto untuk memulai analisis visual</div></div>
+   <img id="preview" alt="Foto yang dipilih untuk analisis">
+   <canvas id="overlay"></canvas><div class="scanline" id="scanline"></div>
+  </div>
+  <div class="controls">
+   <label class="btn primary" for="sourceFile">＋ Pilih foto</label><input id="sourceFile" type="file" accept="image/*">
+   <button class="btn" id="analyzeBtn" disabled>Jalankan scan ↗</button>
+   <button class="btn" id="clearBtn">Reset</button>
+  </div>
+  <div class="note">Tips: gunakan foto yang terang, wajah menghadap kamera, dan pastikan kamu memiliki izin untuk menggunakan foto tersebut.</div>
+ </section>
+ <section class="panel">
+  <div class="panel-head"><h3>02 / Visual report</h3><span class="tiny" id="reportStatus">AWAITING INPUT</span></div>
+  <div class="results" id="results">
+   <div class="empty"><strong>Belum ada hasil</strong>Unggah foto lalu jalankan scan untuk melihat ringkasan visual.</div>
+  </div>
+ </section>
+</div>
+<section class="panel" style="margin-top:18px">
+ <div class="panel-head"><h3>03 / Licensed image gallery</h3><span class="tiny" id="galleryCount">0 IMAGES</span></div>
+ <div class="gallery">
+  <p class="gallery-desc">Tambahkan gambar yang kamu miliki atau berizin untuk dibandingkan. “Kemiripan” di sini hanya membandingkan histogram warna dan komposisi visual gambar, bukan biometrik wajah atau identitas orang.</p>
+  <div class="controls" style="padding:0 0 15px"><label class="btn primary" for="galleryFiles">＋ Tambah gambar galeri</label><input id="galleryFiles" type="file" accept="image/*" multiple><button class="btn" id="compareBtn" disabled>Bandingkan visual</button><button class="btn" id="clearGalleryBtn">Kosongkan galeri</button></div>
+  <div class="gallery-grid" id="galleryGrid"><div class="empty" style="grid-column:1/-1">Galeri masih kosong. Tambahkan gambar berizin untuk memulai.</div></div>
+  <div id="compareSummary" class="tiny" style="margin-top:12px"></div>
+ </div>
+</section>
+<div class="footer"><span>NEON / FACE LAB — demo analisis visual</span><span>Privasi: gambar tidak diunggah ke server oleh aplikasi ini.</span></div>
+</div>
+<script type="module">
+const $ = id => document.getElementById(id);
+const sourceFile=$('sourceFile'), preview=$('preview'), overlay=$('overlay'), stage=$('stage');
+let sourceImage=null, sourceUrl=null, gallery=[], metrics=null;
+
+function loadImage(file){
+ return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file);const img=new Image();img.onload=()=>resolve({img,url,file});img.onerror=reject;img.src=url;});
+}
+function clearOverlay(){const c=overlay.getContext('2d');c.clearRect(0,0,overlay.width,overlay.height)}
+function fitOverlay(){
+ const r=stage.getBoundingClientRect(), pr=preview.getBoundingClientRect();
+ overlay.width=Math.max(1,Math.round(r.width*devicePixelRatio));overlay.height=Math.max(1,Math.round(r.height*devicePixelRatio));
+ overlay.style.width=r.width+'px';overlay.style.height=r.height+'px';
+}
+function drawScan(){
+ fitOverlay();clearOverlay();const ctx=overlay.getContext('2d');ctx.save();ctx.scale(devicePixelRatio,devicePixelRatio);
+ const sr=stage.getBoundingClientRect(), ir=preview.getBoundingClientRect();
+ if(!sourceImage||preview.style.display==='none'){ctx.restore();return}
+ const x=ir.left-sr.left,y=ir.top-sr.top,w=ir.width,h=ir.height;
+ ctx.strokeStyle='#5dff9b';ctx.lineWidth=1.2;ctx.shadowColor='#5dff9b';ctx.shadowBlur=8;
+ const L=Math.min(w,h)*.09;
+ [[x,y,1,1],[x+w,y,-1,1],[x,y+h,1,-1],[x+w,y+h,-1,-1]].forEach(([a,b,sx,sy])=>{ctx.beginPath();ctx.moveTo(a+sx*L,b);ctx.lineTo(a,b);ctx.lineTo(a,b+sy*L);ctx.stroke()});
+ // Decorative approximate guide only; not a detected face landmark.
+ ctx.shadowBlur=0;ctx.setLineDash([4,6]);ctx.strokeStyle='#5dff9b66';ctx.beginPath();ctx.ellipse(x+w/2,y+h*.48,w*.27,h*.36,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+ ctx.fillStyle='#5dff9b';ctx.font='10px monospace';ctx.fillText('VISUAL FRAME / NO ID',x+8,y+16);
+ ctx.restore();
+}
+function luminance(r,g,b){return .2126*r+.7152*g+.0722*b}
+function imageFeatures(img){
+ const c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});c.width=64;c.height=64;
+ ctx.drawImage(img,0,0,64,64);const d=ctx.getImageData(0,0,64,64).data;
+ const hist=new Array(24).fill(0), gray=[];let sat=0,bright=0,edge=0,skin=0;
+ for(let i=0;i<d.length;i+=4){
+  const r=d[i],g=d[i+1],b=d[i+2],l=luminance(r,g,b);
+  hist[Math.min(7,Math.floor(r/32))]++;hist[8+Math.min(7,Math.floor(g/32))]++;hist[16+Math.min(7,Math.floor(b/32))]++;
+  sat+=Math.max(r,g,b)-Math.min(r,g,b);bright+=l;gray.push(l);
+  if(r>80&&g>35&&b>20&&r>g*.9&&r>b*1.05&&Math.abs(r-g)<100)skin++;
+ }
+ for(let y=0;y<64;y++)for(let x=1;x<64;x++){const i=y*64+x;if(Math.abs(gray[i]-gray[i-1])>35)edge++}
+ const n=4096;return {hist:hist.map(v=>v/n),brightness:bright/n,saturation:sat/n,edge:edge/(64*63),skin:skin/n};
+}
+function compareFeatures(a,b){
+ // Histogram intersection on broad RGB bins; intentionally not face/identity matching.
+ return Math.round(100*a.hist.reduce((sum,v,i)=>sum+Math.min(v,b.hist[i]),0)/3*100);
+}
+function metricCard(label,value,sub){return `<div class="metric"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`}
+function bar(label,val,desc){return `<div class="barrow"><div class="barlabel"><span>${label}</span><span>${val}%</span></div><div class="bar"><span style="width:${val}%"></span></div><div class="tiny">${desc}</div></div>`}
+function analyzeFeatures(f){
+ const brightness=Math.round(f.brightness/255*100),saturation=Math.round(f.saturation/255*100),texture=Math.round(Math.min(100,f.edge*380)),colorBalance=Math.round(100-Math.abs(brightness-50)*1.3);
+ return {brightness,saturation,texture,colorBalance};
+}
+function renderReport(){
+ const m=analyzeFeatures(metrics);
+ $('reportStatus').textContent='ANALYSIS COMPLETE';
+ $('results').innerHTML=`
+ <div class="metrics">
+ ${metricCard('Brightness',m.brightness+'%','Rata-rata intensitas gambar')}
+ ${metricCard('Color intensity',m.saturation+'%','Estimasi intensitas warna')}
+ ${metricCard('Detail index',m.texture+'%','Kontras tepi visual')}
+ ${metricCard('Light balance',m.colorBalance+'%','Indikator kasar pencahayaan')}
+ </div>
+ <div><h4 class="section-title">Image characteristics <span class="tiny">ESTIMATED</span></h4>
+ ${bar('Pencahayaan',m.brightness,'Skor berasal dari seluruh gambar, bukan diagnosis kulit.')}
+ ${bar('Intensitas warna',m.saturation,'Nilai tinggi berarti variasi warna lebih kuat.')}
+ ${bar('Detail/tepi',m.texture,'Dipengaruhi resolusi, fokus, latar, dan kompresi.')}
+ </div>
+ <div class="empty"><strong>Catatan analisis</strong>Ini adalah statistik gambar umum. Tidak mendeteksi identitas, usia, emosi, etnis, kesehatan, atau kepribadian. Panduan oval pada preview hanyalah overlay visual, bukan deteksi landmark wajah.</div>`;
+}
+sourceFile.addEventListener('change',async()=>{
+ const file=sourceFile.files?.[0];if(!file)return;
+ if(sourceUrl)URL.revokeObjectURL(sourceUrl);
+ const loaded=await loadImage(file);sourceImage=loaded.img;sourceUrl=loaded.url;
+ preview.src=sourceUrl;preview.style.display='block';$('placeholder').style.display='none';
+ $('fileInfo').textContent=(file.name.length>24?file.name.slice(0,21)+'…':file.name).toUpperCase();
+ $('analyzeBtn').disabled=false;$('reportStatus').textContent='READY TO SCAN';drawScan();
+});
+$('analyzeBtn').addEventListener('click',()=>{
+ if(!sourceImage)return;
+ $('scanline').style.display='block';$('reportStatus').textContent='SCANNING…';$('analyzeBtn').disabled=true;
+ setTimeout(()=>{
+  metrics=imageFeatures(sourceImage);renderReport();$('scanline').style.display='none';$('analyzeBtn').disabled=false;
+  $('compareBtn').disabled=gallery.length===0;drawScan();
+ },850);
+});
+$('clearBtn').addEventListener('click',()=>{
+ if(sourceUrl)URL.revokeObjectURL(sourceUrl);sourceImage=null;sourceUrl=null;metrics=null;sourceFile.value='';
+ preview.removeAttribute('src');preview.style.display='none';$('placeholder').style.display='block';
+ $('fileInfo').textContent='NO IMAGE LOADED';$('reportStatus').textContent='AWAITING INPUT';
+ $('results').innerHTML='<div class="empty"><strong>Belum ada hasil</strong>Unggah foto lalu jalankan scan untuk melihat ringkasan visual.</div>';
+ $('compareSummary').textContent='';$('analyzeBtn').disabled=true;$('compareBtn').disabled=true;clearOverlay();
+});
+window.addEventListener('resize',drawScan);
+
+function renderGallery(){
+ $('galleryCount').textContent=`${gallery.length} IMAGE${gallery.length===1?'':'S'}`;
+ if(!gallery.length){$('galleryGrid').innerHTML='<div class="empty" style="grid-column:1/-1">Galeri masih kosong. Tambahkan gambar berizin untuk memulai.</div>'; $('compareBtn').disabled=true;return}
+ $('galleryGrid').innerHTML=gallery.map((g,i)=>`<article class="gcard"><img src="${g.url}" alt="Gambar galeri ${i+1}"><div class="gmeta"><div class="tiny">IMAGE ${String(i+1).padStart(2,'0')}</div><input aria-label="Label gambar" data-label="${i}" value="${escapeHtml(g.label)}" maxlength="60"><div class="score" id="score-${i}">Belum dibandingkan</div><button class="btn small-action" data-remove="${i}" style="margin-top:8px;width:100%">Hapus</button></div></article>`).join('');
+ $('galleryGrid').querySelectorAll('[data-label]').forEach(inp=>inp.addEventListener('change',()=>{gallery[+inp.dataset.label].label=inp.value||`Image ${+inp.dataset.label+1}`}));
+ $('galleryGrid').querySelectorAll('[data-remove]').forEach(btn=>btn.addEventListener('click',()=>{const i=+btn.dataset.remove;URL.revokeObjectURL(gallery[i].url);gallery.splice(i,1);renderGallery()}));
+ $('compareBtn').disabled=!metrics;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('galleryFiles').addEventListener('change',async()=>{
+ const files=[...($('galleryFiles').files||[])].slice(0,30-gallery.length);
+ for(const file of files){if(!file.type.startsWith('image/'))continue;try{const l=await loadImage(file);gallery.push({img:l.img,url:l.url,label:file.name.replace(/\.[^.]+$/,'').slice(0,60),features:imageFeatures(l.img)})}catch{}}
+ $('galleryFiles').value='';renderGallery();
+});
+$('compareBtn').addEventListener('click',()=>{
+ if(!metrics||!gallery.length)return;
+ const ranked=gallery.map((g,i)=>({g,i,score:compareFeatures(metrics,g.features)})).sort((a,b)=>b.score-a.score);
+ ranked.forEach((item,rank)=>{const el=$('score-'+item.i);if(el)el.textContent=`Visual score: ${item.score}%${rank===0?' · highest color overlap':''}`});
+ $('compareSummary').textContent=`${ranked.length} gambar dibandingkan berdasarkan histogram RGB kasar. Skor bukan probabilitas identitas atau kemiripan wajah.`;
+});
+$('clearGalleryBtn').addEventListener('click',()=>{gallery.forEach(g=>URL.revokeObjectURL(g.url));gallery=[];renderGallery();$('compareSummary').textContent=''});
+</script>
+</body>
+</html>
